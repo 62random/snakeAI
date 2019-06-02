@@ -8,25 +8,10 @@ import turtle
 class Game:
     def __init__(self):
 
-        #loadWindow = turtle.Screen()
-        #turtle.speed(0)
-        #turtle.delay(0)
-        #turtle.hideturtle()
-        #turtle.colormode(255)
-        #turtle.pencolor((255,255,255))
-        #turtle.setpos(0, 0)
-        #turtle.pensize(5)
-
-        self.sh = 30
-        self.sw = 30
+        self.rendering = False
+        self.sh = 15
+        self.sw = 15
         self.steps = 0
-
-        #for i in range(0, self.sw):
-            #for j in range(0, self.sh):
-                #if i in [0, self.sw - 1] or j in [0, self.sh -1]:
-                    ##draw(i,j, (0,0,0))
-
-        #turtle.setup(750, 750)
 
         self.snake = Snake(self.sh - 1, self.sw - 1)
         self.food = Food(self.sh - 1, self.sw - 1)
@@ -34,25 +19,46 @@ class Game:
         while self.food.position in self.snake.parts:
             self.food = Food(self.sh, self.sw)
 
-        #draw(self.food.position[0], self.food.position[1], (100,100,100))
 
         self.action = 2 #move right
 
+    def _render(self, bool):
+        self.rendering = bool
+        if bool:
+            loadWindow = turtle.Screen()
+            turtle.speed(0)
+            turtle.delay(0)
+            turtle.hideturtle()
+            turtle.colormode(255)
+            turtle.pencolor((255,255,255))
+            turtle.setpos(0, 0)
+            turtle.pensize(5)
+
+            for i in range(0, self.sw):
+                for j in range(0, self.sh):
+                    if i in [0, self.sw - 1] or j in [0, self.sh -1]:
+                        self.draw(i,j, (0,0,0))
+
+            turtle.setup(750, 750)
+        elif self.rendering == True:
+            self.rendering = True
+            for i in range(0, self.sw):
+                for j in range(0, self.sh):
+                    if i in [0, self.sw - 1] or j in [0, self.sh -1]:
+                        self.draw(i,j, (255,255,255))
+
+            for p in self.snake.parts:
+                self.draw(p[0], p[1], (255,255,255))
+            self.draw(self.food.position[0], self.food.position[1], (255,255,255))
+            self.rendering = False
 
 
     def _reset(self):
         self.steps = 0
-        #for p in self.snake.parts:
-            #draw(p[0], p[1], (255,255,255))
-        #draw(self.food.position[0], self.food.position[1], (255,255,255))
 
-
-        #for i in range(0, self.sw):
-            #for j in range(0, self.sh):
-                #if i in [0, self.sw - 1] or j in [0, self.sh -1]:
-                    #draw(i,j, (0,0,0))
-
-        #turtle.setup(750, 750)
+        for p in self.snake.parts:
+            self.draw(p[0], p[1], (255,255,255))
+        self.draw(self.food.position[0], self.food.position[1], (255,255,255))
 
         self.snake = Snake(self.sh - 1, self.sw - 1)
         self.food = Food(self.sh - 1, self.sw - 1)
@@ -60,7 +66,7 @@ class Game:
         while self.food.position in self.snake.parts:
             self.food = Food(self.sh, self.sw)
 
-        #draw(self.food.position[0], self.food.position[1], (100,100,100))
+        self.draw(self.food.position[0], self.food.position[1], (100,100,100))
 
         self.action = 2 #move right
 
@@ -73,6 +79,7 @@ class Game:
         self.steps += 1
         if(self.snake.parts[0][0] in [1, self.sh - 1] or self.snake.parts[0][1]) in [1, self.sw - 1] or self.snake.parts[0] in self.snake.parts[1:]:
             print("Snake died with size " + str(len(self.snake.parts)))
+            self._render(False)
             return self.state(), -100, True, True
 
         r = 0
@@ -97,11 +104,11 @@ class Game:
                 nf = Food(self.sh, self.sw)
                 if nf.position not in self.snake.parts:
                     self.food = nf
-            #draw(self.food.position[0], self.food.position[1], (100, 100, 100))
+            self.draw(self.food.position[0], self.food.position[1], (100, 100, 100))
         else:
             tail = self.snake.parts.pop()
-            #draw(tail[0], tail[1], (255,255,255))
-        #draw(self.snake.parts[0][0], self.snake.parts[0][1], (0,0,0))
+            self.draw(tail[0], tail[1], (255,255,255))
+        self.draw(self.snake.parts[0][0], self.snake.parts[0][1], (0,0,0))
 
         return self.state(), r + 1, False, True
 
@@ -133,17 +140,18 @@ class Game:
                     min(a), min(b), min(c), min(d)                                      #snake body
                 ]
 
-def draw(i,j, color):
-    turtle.penup()
-    turtle.pencolor(color)
-    turtle.setpos(i*10, j*10)
-    turtle.pendown()
-    turtle.forward(10)
-    turtle.left(90)
-    turtle.forward(10)
-    turtle.left(90)
-    turtle.forward(10)
-    turtle.left(90)
-    turtle.forward(10)
-    turtle.left(90)
-    turtle.pencolor((0,0,0))
+    def draw(self, i,j, color):
+        if self.rendering:
+            turtle.penup()
+            turtle.pencolor(color)
+            turtle.setpos(i*10, j*10)
+            turtle.pendown()
+            turtle.forward(10)
+            turtle.left(90)
+            turtle.forward(10)
+            turtle.left(90)
+            turtle.forward(10)
+            turtle.left(90)
+            turtle.forward(10)
+            turtle.left(90)
+            turtle.pencolor((0,0,0))

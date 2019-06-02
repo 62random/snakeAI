@@ -3,7 +3,7 @@ import numpy as np
 import math
 import time
 
-GAMMA = 0.95
+GAMMA = 0.99
 
 class GameRunner:
     def __init__(self, sess, model, env, memory, max_eps, min_eps, decay, render=True):
@@ -19,16 +19,17 @@ class GameRunner:
         self._steps = 0
         self._reward_store = []
         self._max_x_store = []
+        self._rendering = False
 
     def run(self):
         state = self._env._reset()
         tot_reward = 0
         max_x = -100
         while True:
-            #time.sleep(0.1)
+            if self._rendering:
+                time.sleep(0.1)
             action = self._choose_action(state)
             next_state, reward, done, info = self._env._step(action)
-            #print(next_state)
             if next_state[0] > max_x:
                 max_x = next_state[0]
 
