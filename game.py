@@ -1,3 +1,4 @@
+import __future__
 import random
 import curses
 from snake import *
@@ -79,8 +80,8 @@ class Game:
         self.steps += 1
         if(self.snake.parts[0][0] in [1, self.sh - 1] or self.snake.parts[0][1]) in [1, self.sw - 1] or self.snake.parts[0] in self.snake.parts[1:]:
             print("Snake died with size " + str(len(self.snake.parts)))
-            self._render(False)
-            return self.state(), -100, True, True
+            #self._render(False)
+            return self.state(), -100, True, len(self.snake.parts)
 
         r = 0
 
@@ -98,7 +99,7 @@ class Game:
         self.snake.parts.insert(0, new_head)
 
         if self.snake.parts[0] == self.food.position:
-            r += 10
+            r = 100
             self.food = None
             while self.food is None:
                 nf = Food(self.sh, self.sw)
@@ -110,7 +111,7 @@ class Game:
             self.draw(tail[0], tail[1], (255,255,255))
         self.draw(self.snake.parts[0][0], self.snake.parts[0][1], (0,0,0))
 
-        return self.state(), r + 1, False, True
+        return self.state(), r - 2, False, len(self.snake.parts)
 
     def state(self):
         dist_wall_right = self.sw - 1 - self.snake.parts[0][1]
@@ -123,10 +124,10 @@ class Game:
         dist_food_down = self.food.position[0] - self.snake.parts[0][0]
         dist_food_up =  self.snake.parts[0][0] - self.food.position[0]
 
-        a = [100] #right
-        b = [100] #left
-        c = [100] #down
-        d = [100] #up
+        a = [self.sw] #right
+        b = [self.sw] #left
+        c = [self.sh] #down
+        d = [self.sh] #up
         for p in self.snake.parts[1:]:
             a.append(p[1] - self.snake.parts[0][1])
             b.append(self.snake.parts[0][1] - p[1])
@@ -134,11 +135,11 @@ class Game:
             d.append(self.snake.parts[0][0] - p[0])
 
 
-        return  [
-                    dist_wall_right, dist_wall_left, dist_wall_down, dist_wall_up,      #wall
+        return  map(lambda a:  a#(a*2)/self.sh - 1 ,[
+                    ,[dist_wall_right, dist_wall_left, dist_wall_down, dist_wall_up,      #wall
                     dist_food_right, dist_food_left, dist_food_down, dist_food_up,      #food
                     min(a), min(b), min(c), min(d)                                      #snake body
-                ]
+                ])
 
     def draw(self, i,j, color):
         if self.rendering:

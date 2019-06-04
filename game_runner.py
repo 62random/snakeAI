@@ -3,7 +3,7 @@ import numpy as np
 import math
 import time
 
-GAMMA = 0.99
+GAMMA = 1
 
 class GameRunner:
     def __init__(self, sess, model, env, memory, max_eps, min_eps, decay, render=True):
@@ -18,20 +18,20 @@ class GameRunner:
         self._eps = self._max_eps
         self._steps = 0
         self._reward_store = []
-        self._max_x_store = []
+        self._max_s_store = []
         self._rendering = False
 
     def run(self):
         state = self._env._reset()
-        tot_reward = 0
-        max_x = -100
+        self.tot_reward = 0
+        max_s = 3
         while True:
             if self._rendering:
                 time.sleep(0.1)
             action = self._choose_action(state)
-            next_state, reward, done, info = self._env._step(action)
-            if next_state[0] > max_x:
-                max_x = next_state[0]
+            next_state, reward, done, size = self._env._step(action)
+            if size > max_s:
+                max_s = size
 
             if done:
                 next_state = None
@@ -43,13 +43,12 @@ class GameRunner:
             self._eps = self._min_eps + (self._max_eps - self._min_eps)* math.exp(-self._decay * self._steps)
 
             state = next_state
-            tot_reward += reward
+            self.tot_reward += reward
 
             if done:
-                self._reward_store.append(tot_reward)
-                self._max_x_store.append(max_x)
+                self._reward_store.append(self.tot_reward)
+                self._max_s_store.append(max_s)
                 break
-        print("Step {}, Total reward: {}, Eps: {}".format(self._steps, tot_reward, self._eps))
 
     def _choose_action(self, state):
         if random.random() < self._eps:
