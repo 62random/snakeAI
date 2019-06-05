@@ -12,7 +12,7 @@ These results were achieved playing 10000 games with a limit of 50 moves, in a 1
 
 
 ![](./plays.gif)
-Last 10 games played in the training.
+	Last 10 games played in the training.
 
 ![](./graph.png)
 	Length of the snake upon dying or after 50 moves (the orange line is the cumulative average of the legth)
