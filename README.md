@@ -5,7 +5,14 @@ The main libraries used in this project were tensorflow and numpy. Most of the c
 
 Although I am certain better results can be achieved in this project taking a more scientific and/or knowledgeable approach to the problem, I'm satisfied with the observations I was able to make while experimenting with this solution, some of which are depicted below.
 
+___
 
+
+These results were achieved playing 10000 games with a limit of 50 moves, in a 15x15 board.
+
+
+![](./plays.gif)
+Last 10 games played in the training.
 
 ![](./graph.png)
-Length of the snake upon dying or after 50 moves (the orange line is the cumulative average of the legth)
+	Length of the snake upon dying or after 50 moves (the orange line is the cumulative average of the legth)

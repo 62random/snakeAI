@@ -45,9 +45,9 @@ with tf.Session() as sess:
     for i in range(1,len(gr._max_s_store)):
         avg.append(sum(gr._max_s_store[:i])/len(gr._max_s_store[:i]))
 
-    plt.plot(gr._reward_store)
+    plt.scatter(list(range(len(gr._reward_store))), gr._reward_store)
     plt.show()
     plt.close("all")
-    plt.plot(gr._max_s_store)
-    plt.plot(avg)
+    plt.scatter(list(range(len(gr._max_s_store))), gr._max_s_store)
+    plt.plot(avg, color="orange")
     plt.show()
