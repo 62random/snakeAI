@@ -79,9 +79,12 @@ class Game:
     def _step(self, action):
         self.steps += 1
         if(self.snake.parts[0][0] in [1, self.sh - 1] or self.snake.parts[0][1]) in [1, self.sw - 1] or self.snake.parts[0] in self.snake.parts[1:]:
-            print("Snake died with size " + str(len(self.snake.parts)))
+            #print("Snake died with size " + str(len(self.snake.parts)))
             #self._render(False)
             return self.state(), -100, True, len(self.snake.parts)
+
+        if self.steps == 50:
+            return self.state(), 0, True, len(self.snake.parts)
 
         r = 0
 
@@ -99,7 +102,7 @@ class Game:
         self.snake.parts.insert(0, new_head)
 
         if self.snake.parts[0] == self.food.position:
-            r = 100
+            r = 400
             self.food = None
             while self.food is None:
                 nf = Food(self.sh, self.sw)
@@ -111,7 +114,8 @@ class Game:
             self.draw(tail[0], tail[1], (255,255,255))
         self.draw(self.snake.parts[0][0], self.snake.parts[0][1], (0,0,0))
 
-        return self.state(), r - 2, False, len(self.snake.parts)
+
+        return self.state(), r - 1, False, len(self.snake.parts)
 
     def state(self):
         dist_wall_right = self.sw - 1 - self.snake.parts[0][1]
@@ -120,26 +124,44 @@ class Game:
         dist_wall_up = self.snake.parts[0][0] - 1
 
         dist_food_right = self.food.position[1] - self.snake.parts[0][1]
-        dist_food_left =  self.snake.parts[0][1] - self.food.position[1]
         dist_food_down = self.food.position[0] - self.snake.parts[0][0]
-        dist_food_up =  self.snake.parts[0][0] - self.food.position[0]
 
-        a = [self.sw] #right
-        b = [self.sw] #left
+        a = [self.sh] #right
+        b = [self.sh] #left
         c = [self.sh] #down
         d = [self.sh] #up
-        for p in self.snake.parts[1:]:
-            a.append(p[1] - self.snake.parts[0][1])
-            b.append(self.snake.parts[0][1] - p[1])
-            c.append(p[0] - self.snake.parts[0][0])
-            d.append(self.snake.parts[0][0] - p[0])
+        e = [self.sh] #ne
+        f = [self.sh] #nw
+        g = [self.sh] #se
+        h = [self.sh] #sw
 
+        x = self.snake.parts[0][1]
+        y = self.snake.parts[0][0]
+        for i in range(self.sh, 0, -1):
+            if (y, x + i) in self.snake.parts: #right
+                a.append(i)
+            if (y, x - i) in self.snake.parts: #left
+                b.append(i)
+            if (y + i, x) in self.snake.parts: # down
+                c.append(i)
+            if (y - i, x) in self.snake.parts: # up
+                d.append(i)
+            if (y + i, x + i) in self.snake.parts: #se
+                e.append(i)
+            if (y - i, x + i) in self.snake.parts: #ne
+                f.append(i)
+            if (y + i, x - i) in self.snake.parts: #sw
+                g.append(i)
+            if (y - i, x - i) in self.snake.parts: #nw
+                h.append(i)
 
-        return  map(lambda a:  a#(a*2)/self.sh - 1 ,[
-                    ,[dist_wall_right, dist_wall_left, dist_wall_down, dist_wall_up,      #wall
-                    dist_food_right, dist_food_left, dist_food_down, dist_food_up,      #food
-                    min(a), min(b), min(c), min(d)                                      #snake body
-                ])
+        ret = [
+                    dist_wall_right, dist_wall_left, dist_wall_down, dist_wall_up,      #wall
+                    dist_food_right, dist_food_down,      #food
+                    min(a), min(b), min(c), min(d), min(e), min(f), min(g), min(h)                                      #snake body
+                ]
+        #print(ret)
+        return  ret
 
     def draw(self, i,j, color):
         if self.rendering:

@@ -27,7 +27,7 @@ class GameRunner:
         max_s = 3
         while True:
             if self._rendering:
-                time.sleep(0.1)
+                time.sleep(0.025)
             action = self._choose_action(state)
             next_state, reward, done, size = self._env._step(action)
             if size > max_s:
